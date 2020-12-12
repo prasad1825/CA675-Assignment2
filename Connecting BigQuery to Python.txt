@@ -1,0 +1,64 @@
+----------Connecting BigQuery to Python
+--------environment: Notebook on GOOGLE COLAB------------------
+--1. Install the Python BigQuery dependency as follows
+
+!pip install --upgrade google-cloud-BigQuery
+!pip install --upgrade 'google-cloud-bigquery[bqstorage,pandas]'
+!pip install google-cloud-bigquery-storage
+
+--2. Set up a service account to access BigQuery from external libraries on the Google cloud service account page
+---2.1. Create service account. Role as owner/editor
+---2.2. Create prive key on the service account
+-- ---> ca675-project-4f8ddd72be93.json was created and downloaded automatically to local computer after private key had been created on the service account of the project namely CA675-A2-2020-new /GCP.
+
+--3. Upload file .json to google drive for later stages. 
+--4. Import drive into COLAB
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+--5. setup environment variables for the Python script to use while accessing BigQuery
+
+import os
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/content/drive/MyDrive/ca675-project-4f8ddd72be93.json"
+ 
+--6. Use the python client library to create a script to access datasets available in BigQuerry
+
+from google.cloud import bigquery
+client = bigquery.Client()
+
+sql = """
+SELECT 
+	string_field_0 as vin, 
+	string_field_1 as model_name, 
+	string_field_2 as franchise_make,
+	string_field_3 as make_name, 
+	bool_field_4 as is_new,  
+	timestamp_field_5 as listed_date, 
+	int64_field_6 as daysonmarket,
+	int64_field_7 as year, 
+	double_field_8 as price, 
+	double_field_9 as savings_amount, 
+	string_field_10 as engine_type,
+	string_field_11 as body_type,
+	string_field_12 as city, 
+	int64_field_13 as city_fuel_economy, 
+	double_field_14 as highway_fuel_economy, 
+	string_field_15 as fuel_type, 
+	string_field_16 as fuel_tank_volume, 
+	string_field_17 as interior_color,
+	string_field_18 as listing_color,
+	string_field_19 as  maximum_seating,
+	double_field_20 as mileage, 
+	string_field_21 as transmission,
+	string_field_22 as transmission_display,
+	string_field_23 as wheel_system_display, 
+	double_field_24 as latitude,
+	double_field_25 as longitude, 
+	string_field_26 as description 
+FROM 
+	`deft-melody-294014.a123.a1234`"""
+
+df = client.query(sql).to_dataframe()
+
+df
